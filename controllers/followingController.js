@@ -27,6 +27,30 @@ const follow = async (req, res) => {
         
 };
 
+// Obtener la lista de usuarios que el usuario sigue
+const getFollowing = async(req, res) => {
+    const id_usuario = req.user.id;
+
+    try {
+        const usuario = await db.Usuario.findByPk(id_usuario, {
+            include: [{
+                model: db.Usuario,
+                as: 'seguidos', // Usa la relación "seguidos"
+                attributes: ['id', 'nombre', 'nickname'],
+            }, ],
+        });
+
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        res.status(200).send(usuario.seguidos); // Enviar solo los usuarios seguidos
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};
+
+
 const unfollow = async (req, res) => {
     const id_usuario = req.user.id;
     const { id_usuario_seguido } = req.body;
@@ -49,44 +73,6 @@ const unfollow = async (req, res) => {
     }
 };
 
-
-
-
-
-const listFollowing = async (req, res) => {
-    const id_usuario = req.user.id;
-
-    try {
-        const following = await Following.findAll({
-            where: { id_usuario: id_usuario },
-            include: [{ model: Usuario, as: 'usuario_seguido', attributes: ['nickname', 'nombre'] }]
-        });
-
-        res.status(200).send(following);
-    } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
-    }
-};
-
-
-
-
-
-
-const listFollowers = async (req, res) => {
-    const id_usuario = req.user.id;
-
-    try {
-        const followers = await Following.findAll({
-            where: { id_usuario_seguido: id_usuario },
-            include: [{ model: db.Usuarios, as: 'usuario_seguidor', attributes: ['nickname', 'nombre'] }]
-        });
-
-        res.status(200).send(followers);
-    } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
-    }
-};
 
 const listMutualFollowing = async (req, res) => {
     const id_usuario = req.user.id;
@@ -113,7 +99,5 @@ const listMutualFollowing = async (req, res) => {
 module.exports = {
     follow,  
     unfollow,
-    listFollowing,
-    listFollowers, 
     listMutualFollowing
 };
