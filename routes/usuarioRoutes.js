@@ -83,6 +83,8 @@ router.post("/register", usuarioController.register);
  *         description: Bad request - validation error
  *       404:
  *         description: User not found
+ *       500:
+ *         description: Internal server error
  */
 router.put("/me", auth, upload.single('avatar'), usuarioController.update);
 
@@ -145,6 +147,45 @@ router.put("/me", auth, upload.single('avatar'), usuarioController.update);
 router.get("/list", usuarioController.list);
 
 // Este háganlo uds!!!!!
+/**
+ * @swagger
+ * /usuarios/login:
+ *   post:
+ *     tags: [Usuarios]
+ *     summary: Authenticates the user
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               mail:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: token created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 id:
+ *                   type: integer
+ *                 nombre:
+ *                   type: string
+ *                 mail:
+ *                   type: string
+ *       404:
+ *         description: User not found
+ *       400:
+ *         description: Bad request - Incorrect password    
+ *       500:
+ *         description: Internal server error
+ */
 router.post("/login", usuarioController.login);
 
 module.exports = router;
