@@ -49,38 +49,80 @@ router.delete("/unfollow", auth, followingController.unfollow);
 
 /**
  * @swagger
- * /followings/following:
+ * /followings/follow/:
  *   get:
  *     tags: [Follows]
- *     summary: List of users I follow
+ *     summary: List all followings
  *     security:
  *       - ApiTokenAuth: []
- *     requestBody:
- *       required: true
- *       content:
- *         application/x-www-form-urlencoded:
- *           schema:
- *             type: object
- *             properties:
- *               id_usuario:
- *                 type: integer
  *     responses:
  *       200:
- *         description: A list of the followed
+ *         description: A paginated list of users
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *               properties:
- *                 nickname:
- *                   type: string
- *                 nombre:
- *                   type: string
+ *                 totalItems:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 itemsPerPage:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_usuario_seguido:
+ *                         type: integer
+ *       404:
+ *         description: Users not found
  *       500:
  *         description: Internal server error
  */
-router.get("/following", auth, followingController.listFollowing);
+router.get("/follow", auth, followingController.getFollowing);
 
-router.get("/followers", auth, followingController.listFollowers);
+
+/**
+ * @swagger
+ * /followings/followers/:
+ *   get:
+ *     tags: [Follows]
+ *     summary: List all followers
+ *     security:
+ *       - ApiTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: A paginated list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 totalItems:
+ *                   type: integer
+ *                 totalPages:
+ *                   type: integer
+ *                 currentPage:
+ *                   type: integer
+ *                 itemsPerPage:
+ *                   type: integer
+ *                 data:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *                     properties:
+ *                       id_usuario_seguido:
+ *                         type: integer
+ *       404:
+ *         description: Users not found
+ *       500:
+ *         description: Internal server error
+ */
+router.get("/followers", auth, followingController.getFollowers);
+
 router.get("/mutual", auth, followingController.listMutualFollowing);
 module.exports = router;

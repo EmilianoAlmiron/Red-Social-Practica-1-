@@ -2,6 +2,7 @@ const db = require('../models');
 const Following = db.Following;
 const Usuario = db.Usuario;
 
+ // Seguir a alguien, pide el id_usuario y id_usuario_seguido
 const follow = async (req, res) => {
     const id_usuario = req.user.id;
     const { id_usuario_seguido } = req.body;    
@@ -30,21 +31,45 @@ const follow = async (req, res) => {
 // Obtener la lista de usuarios que el usuario sigue
 const getFollowing = async(req, res) => {
     const id_usuario = req.user.id;
-
     try {
         const usuario = await db.Usuario.findByPk(id_usuario, {
             include: [{
                 model: db.Usuario,
                 as: 'seguidos', // Usa la relación "seguidos"
                 attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
             }, ],
         });
-
         if (!usuario) {
             return res.status(404).send({ error: 'Usuario no encontrado' });
         }
-
         res.status(200).send(usuario.seguidos); // Enviar solo los usuarios seguidos
+    } catch (error) {
+        res.status(500).send({ error: error.message });
+    }
+};
+
+// Obtener la lista de las personas que siguen al usuario
+const getFollowers = async(req, res) => {
+    const id_usuario_seguido = req.user.id;
+
+    try {
+        const usuario = await db.Usuario.findByPk(id_usuario_seguido, {
+            include: [{
+                model: db.Usuario,
+                as: 'seguidores', // Usa la relación "seguidores"
+                attributes: ['id', 'nombre', 'nickname'],
+                through: { 
+                    attributes:  [] 
+                }
+            }, ],
+        });
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+        res.status(200).send(usuario.seguidores); // Enviar solo los usuarios seguidores
     } catch (error) {
         res.status(500).send({ error: error.message });
     }
@@ -99,5 +124,7 @@ const listMutualFollowing = async (req, res) => {
 module.exports = {
     follow,  
     unfollow,
-    listMutualFollowing
+    listMutualFollowing,
+    getFollowing,
+    getFollowers,
 };
