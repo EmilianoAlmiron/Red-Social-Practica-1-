@@ -10,6 +10,7 @@ const authRouter = require("./routes/authRoutes");
 const usuarioRouter = require("./routes/usuarioRoutes");
 const followingRouter = require("./routes/followingRoutes");
 
+
 const app = express();
 
 app.use(bodyParser.json());

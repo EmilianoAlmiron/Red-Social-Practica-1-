@@ -112,7 +112,7 @@ const login = async(req, res) => {
             id: usuario.id,
             nombre: usuario.nombre,
             mail: usuario.mail
-        }, "1234", { expiresIn: 180 });
+        }, process.env.JWT_SECRET, { expiresIn: 180 });
         res.status(200).send({ token });
     } catch (error) {
         res.status(500).send({
