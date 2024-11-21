@@ -14,13 +14,13 @@ const seguir = async (req, res) => {
     
     try {
         await Following.create({ id_usuario, id_usuario_seguido });//utiliza el create del Sequelize con el modelo de Following
-        res.status(201).send({ message: "Has comenzado a seguir al usuario" });
+        return res.status(201).send({ message: "Has comenzado a seguir al usuario" });
     } catch (error) {
         if(error.name === "SequelizeUniqueConstraintError"){
-            res.status(401).send({message: "Ya sigues a este usuario"});
+            return res.status(401).send({message: "Ya sigues a este usuario"});
         }
         else{
-            res.status(500).send({ 
+            return res.status(500).send({ 
                 error: error.message,
                 tipo: error.name 
             });
@@ -44,12 +44,12 @@ const dejarSeguir = async (req, res) => {
         });
         //compara que result tenga un numero, si no entra en el else
         if (result > 0) {
-            res.status(200).send({ message: "Has dejado de seguir al usuario" });
+            return res.status(200).send({ message: "Has dejado de seguir al usuario" });
         } else {
-            res.status(404).send({ message: "No se encontró la relación de seguimiento" });
+            return res.status(404).send({ message: "No se encontró la relación de seguimiento" });
         }
     } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
+        return res.status(500).send({ error: error.message, tipo: error.name });
     }
 };
 
@@ -58,6 +58,7 @@ const dejarSeguir = async (req, res) => {
 const listaSeguidos = async(req, res) => {
     const id_usuario = req.user.id;
     try {
+        //busca en la tabla a los usuarios que sigo
         const usuario = await Usuario.findByPk(id_usuario, {
             include: [{
                 model: Usuario,
@@ -68,23 +69,25 @@ const listaSeguidos = async(req, res) => {
                 }
             }, ],
         });
+        //si no encontro usuarios manda un msj
         if (!usuario) {
-            return res.status(404).send({ error: 'Usuario no encontrado' });
+            return res.status(404).send({ error: 'Empeza a seguir a alguien!!!, por el momento no seguis a nadie....' });
         }
-        res.status(200).send(usuario.seguidos); // Enviar solo los usuarios seguidos
+        return res.status(200).send(usuario.seguidos); // Enviar solo los usuarios seguidos
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        return res.status(500).send({ error: error.message });
     }
 };
 
 // Permite obtener la lista de las personas que siguen al usuario logiado
-const getFollowers = async(req, res) => {
+const listaSeguidores = async(req, res) => {
     const id_usuario_seguido = req.user.id;
 
     try {
-        const usuario = await db.Usuario.findByPk(id_usuario_seguido, {
+        //busca en la tabla a los usuarios que me siguen
+        const usuario = await Usuario.findByPk(id_usuario_seguido, {
             include: [{
-                model: db.Usuario,
+                model: Usuario,
                 as: 'seguidores', // Usa la relación "seguidores"
                 attributes: ['id', 'nombre', 'nickname'],
                 through: { 
@@ -92,34 +95,59 @@ const getFollowers = async(req, res) => {
                 }
             }, ],
         });
+        //si no encontro a usuarios manda un msj
         if (!usuario) {
-            return res.status(404).send({ error: 'Usuario no encontrado' });
+            return res.status(404).send({ error: 'No te sigue nadie...... (｡╯︵╰｡) .... ' });
         }
-        res.status(200).send(usuario.seguidores); // Enviar solo los usuarios seguidores
+        return res.status(200).send(usuario.seguidores); // Enviar solo los usuarios que son seguidores
     } catch (error) {
-        res.status(500).send({ error: error.message });
+        return res.status(500).send({ error: error.message });
     }
 };
 
 // Permite listar a los usuarios con los que existe un seguimiento mutuo
-const listMutualFollowing = async (req, res) => {
+const listaSeguidosMutuos = async(req, res) => {
+    //busca al usuario por el token
     const id_usuario = req.user.id;
-
     try {
-        const mutuals = await db.sequelize.query(`
-            SELECT u.id, u.nombre
-            FROM Usuarios u
-            INNER JOIN Followings f1 ON u.id = f1.id_usuario_seguido
-            INNER JOIN Followings f2 ON u.id = f2.id_usuario
-            WHERE f1.id_usuario = :id_usuario AND f2.id_usuario_seguido = :id_usuario
-        `, {
-            replacements: { id_usuario: id_usuario },
-            type: db.Sequelize.QueryTypes.SELECT
+        //busco a los usuarios por ID
+        const usuario = await db.Usuario.findByPk(id_usuario, {
+            //busca la relacion mutua
+            include: [
+                {
+                    model: db.Usuario,
+                    as: 'seguidos', // Usuarios que sigues
+                    attributes: ['id', 'nombre', 'nickname'],
+                    through: {
+                        attributes: []
+                    }
+                },
+                {
+                    model: db.Usuario,
+                    as: 'seguidores', // Usuarios que te siguen
+                    attributes: ['id', 'nombre', 'nickname'],
+                    through: {
+                        attributes: []
+                    }
+                }
+            ]
         });
 
-        res.status(200).send(mutuals);
+        if (!usuario) {
+            return res.status(404).send({ error: 'Usuario no encontrado' });
+        }
+
+        // Filtrar usuarios seguidos, el some(verifica si el usuario seguido tambien esta en la lista de seguidores)
+        const mutuals = usuario.seguidos.filter(seg => usuario.seguidores.some(seguidor => seguidor.id === seg.id));
+        //filter crea un array
+
+        //si nadie se sigue mutuamente muestra un msj
+        if(mutuals.length === 0){
+            return res.status(200).send({ message: 'De los que sigues, no te siguen o no seguis a nadie'});
+        }
+        return res.status(200).send(mutuals); // Enviar solo los usuarios mutuos
     } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
+        return res.status(500).send({ error: error.message });
     }
 };
 
@@ -127,7 +155,7 @@ const listMutualFollowing = async (req, res) => {
 module.exports = {
     seguir,  
     dejarSeguir,
-    listMutualFollowing,
     listaSeguidos,
-    getFollowers,
+    listaSeguidores,
+    listaSeguidosMutuos,
 };

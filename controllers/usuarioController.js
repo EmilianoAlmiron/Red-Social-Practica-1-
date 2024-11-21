@@ -13,12 +13,14 @@ const registrar = async(req, res) => {
         return res.status(400).send({ message: "Faltan datos de completar" });
     }
 
+    //declara null al principio
     let avatarPath= null;
+    //si tiene algun dato cargado lo guarda
     if (req.file){
         avatarPath = `uploads/avatars/${req.file.filename}`;
     }
     try {
-        const usuarioData = { 
+        const datosUsuario = { 
             nombre, 
             mail, 
             nickname, 
@@ -27,7 +29,7 @@ const registrar = async(req, res) => {
         };
 
         //Crea al usuario en la Base de Datos 
-        const usuario = await Usuario.create(usuarioData);//usa el create del modelo Usuario de Sequelize
+        const usuario = await Usuario.create(datosUsuario);//usa el create del modelo Usuario de Sequelize
         res.status(201).send(usuario);
     } catch (error) {
         //Error si el Mail o nickname ya existen
@@ -117,12 +119,15 @@ const actualizar = async(req, res) => {
     try {
         const id = req.user.id;
         const { nombre, nickname, mail, password } = req.body;
+
+        //declara null al principio
         let avatarPath = null;
+        //si tiene algun dato cargado lo guarda
         if (req.file) {
             avatarPath = `uploads/avatars/${req.file.filename}`
         }
 
-        // Actualizar los campos
+        // asegura que encuentre al usuario
         const usuario = await Usuario.findByPk(id);
         if (!usuario) {
             return res.status(404).send({ error: 'Usuario no encontrado' });

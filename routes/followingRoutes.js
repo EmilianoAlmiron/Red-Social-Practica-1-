@@ -48,7 +48,7 @@ router.post("/seguir", auth, followingController.seguir);
 
 /**
  * @swagger
- * /followings/dejarDeSeguir:
+ * /followings/dejarSeguir:
  *   delete:
  *     tags:
  *       - Follows
@@ -100,84 +100,110 @@ router.post("/seguir", auth, followingController.seguir);
  *                   type: string
  *                   example: SequelizeDatabaseError
  */
-router.delete("/dejarDeSeguir", auth, followingController.dejarSeguir);
+router.delete("/dejarSeguir", auth, followingController.dejarSeguir);
 
 /**
  * @swagger
- * /followings/follow/:
+ * /followings/seguidos/:
  *   get:
  *     tags: [Follows]
- *     summary: List all followings
+ *     summary: Lista de Seguidos
  *     security:
  *       - ApiTokenAuth: []
  *     responses:
  *       200:
- *         description: A paginated list of users
+ *         description: Lista de usuarios Seguidos
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 totalItems:
- *                   type: integer
- *                 totalPages:
- *                   type: integer
- *                 currentPage:
- *                   type: integer
- *                 itemsPerPage:
- *                   type: integer
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id_usuario_seguido:
- *                         type: integer
+ *               type: array
+ *               items: 
+ *                  type: object
+ *               properties: 
+ *                 id: 
+ *                   type: integer 
+ *                   example: 1 
+ *                 nombre: 
+ *                   type: string 
+ *                   example: "Nombre de Usuario" 
+ *                 nickname: 
+ *                   type: string 
+ *                   example: "UsuarioNickname"
  *       404:
  *         description: Users not found
  *       500:
  *         description: Internal server error
  */
-router.get("/follow", auth, followingController.listaSeguidos);
+router.get("/seguidos", auth, followingController.listaSeguidos);
 
 
 /**
  * @swagger
- * /followings/followers/:
+ * /followings/seguidores/:
  *   get:
  *     tags: [Follows]
- *     summary: List all followers
+ *     summary: Lista de Seguidores
  *     security:
  *       - ApiTokenAuth: []
  *     responses:
  *       200:
- *         description: A paginated list of users
+ *         description: Lista de usuarios Seguidores
  *         content:
  *           application/json:
  *             schema:
- *               type: object
- *               properties:
- *                 totalItems:
- *                   type: integer
- *                 totalPages:
- *                   type: integer
- *                 currentPage:
- *                   type: integer
- *                 itemsPerPage:
- *                   type: integer
- *                 data:
- *                   type: array
- *                   items:
- *                     type: object
- *                     properties:
- *                       id_usuario_seguido:
- *                         type: integer
+ *               type: array
+ *               items: 
+ *                  type: object
+ *               properties: 
+ *                 id: 
+ *                   type: integer 
+ *                   example: 1 
+ *                 nombre: 
+ *                   type: string 
+ *                   example: "Nombre de Usuario" 
+ *                 nickname: 
+ *                   type: string 
+ *                   example: "UsuarioNickname"
  *       404:
  *         description: Users not found
  *       500:
  *         description: Internal server error
  */
-router.get("/followers", auth, followingController.getFollowers);
+router.get("/seguidores", auth, followingController.listaSeguidores);
 
-router.get("/mutual", auth, followingController.listMutualFollowing);
+
+/**
+ * @swagger
+ * /followings/seguimientosMutuos:
+ *   get:
+ *     tags: [Follows]
+ *     summary: Listar usuarios que se siguen mutuamente
+ *     security:
+ *       - ApiTokenAuth: []
+ *     responses:
+ *       200:
+ *         description: Lista de usuarios con seguimiento mutuo 
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                     example: 1
+ *                   nombre:
+ *                     type: string
+ *                     example: "Nombre de Usuario"
+ *                   nickname:
+ *                     type: string
+ *                     example: "UsuarioNickname"
+ *       404:
+ *         description: No se encontraron usuarios con seguimiento mutuo
+ *       500:
+ *         description: Error interno del servidor
+ */
+router.get("/seguimientosMutuos", auth, followingController.listaSeguidosMutuos);
+
 module.exports = router;
