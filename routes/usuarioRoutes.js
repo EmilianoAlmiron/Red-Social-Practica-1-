@@ -160,10 +160,10 @@ router.get("/list", usuarioController.list);
  *           schema:
  *             type: object
  *             properties:
- *               mail:
+ *               nickname:
  *                 type: string
- *                 format: email
- *                 example: "ejemplo@comoestas.com"
+ *                 format: nickname
+ *                 example: "Cordobezzz"
  *               password:
  *                 type: string
  *     responses:
