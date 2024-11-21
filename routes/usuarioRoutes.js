@@ -6,10 +6,10 @@ const upload = require("../middlewares/uploadMiddleware");
 
 /**
  * @swagger
- * /usuarios/register:
+ * /usuarios/registrar:
  *   post:
  *     tags: [Usuarios]
- *     summary: Register a new user
+ *     summary: Registrar nuevo usuario
  *     requestBody:
  *       required: true
  *       content:
@@ -19,13 +19,17 @@ const upload = require("../middlewares/uploadMiddleware");
  *             properties:
  *               nombre:
  *                 type: string
+ *                 example: "Nombre"
  *               mail:
  *                 type: string
  *                 format: email
+ *                 example: "algo@hola.com"
  *               nickname:
  *                 type: string
+ *                 example: "Apodo"
  *               password:
  *                 type: string
+ *                 example: "poneAlgoSeguro"
  *     responses:
  *       201:
  *         description: User created successfully
@@ -47,14 +51,14 @@ const upload = require("../middlewares/uploadMiddleware");
  *       500:
  *         description: Internal server error
  */
-router.post("/register", usuarioController.register);
+router.post("/registrar", usuarioController.registrar);
 
 /**
  * @swagger
- * /usuarios/me:
+ * /usuarios/mio:
  *   put:
  *     tags: [Usuarios]
- *     summary: Update current user's profile
+ *     summary: Actualizar el perfil del usuario actual
  *     security:
  *       - ApiTokenAuth: []
  *     requestBody:
@@ -66,16 +70,21 @@ router.post("/register", usuarioController.register);
  *             properties:
  *               nombre:
  *                 type: string
+ *                 example: "Nombre"
  *               nickname:
  *                 type: string
+ *                 example: "Apodo"
  *               mail:
  *                 type: string
  *                 format: email
+ *                 example: "Algo@hola.com"
  *               password:
  *                 type: string
+ *                 example: "****"
  *               avatar:
  *                 type: string
  *                 format: binary
+
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -86,14 +95,14 @@ router.post("/register", usuarioController.register);
  *       500:
  *         description: Internal server error
  */
-router.put("/me", auth, upload.single('avatar'), usuarioController.update);
+router.put("/mio", auth, upload.single('avatar'), usuarioController.actualizar);
 
 /**
  * @swagger
- * /usuarios/list:
+ * /usuarios/lista:
  *   get:
  *     tags: [Usuarios]
- *     summary: List all users with pagination
+ *     summary: Lista de todos los usuarios por paginas
  *     parameters:
  *       - name: page
  *         in: query
@@ -101,14 +110,14 @@ router.put("/me", auth, upload.single('avatar'), usuarioController.update);
  *         schema:
  *           type: integer
  *           minimum: 1
- *         description: Page number for pagination
+ *         description: Número de página para paginación
  *       - name: limit
  *         in: query
  *         required: false
  *         schema:
  *           type: integer
  *           minimum: 1
- *         description: Number of users per page
+ *         description: Numero de usuarios por pagina
  *     responses:
  *       200:
  *         description: A paginated list of users
@@ -144,15 +153,15 @@ router.put("/me", auth, upload.single('avatar'), usuarioController.update);
  *       500:
  *         description: Internal server error
  */
-router.get("/list", usuarioController.list);
+router.get("/lista", usuarioController.listado);
 
-// Este háganlo uds!!!!!
+
 /**
  * @swagger
- * /usuarios/login:
+ * /usuarios/iniciarSesion:
  *   post:
  *     tags: [Usuarios]
- *     summary: Authenticates the user
+ *     summary: So vo?
  *     requestBody:
  *       required: true
  *       content:
@@ -187,6 +196,6 @@ router.get("/list", usuarioController.list);
  *       500:
  *         description: Internal server error
  */
-router.post("/login", usuarioController.login);
+router.post("/iniciarSesion", usuarioController.iniciarSesion);
 
 module.exports = router;

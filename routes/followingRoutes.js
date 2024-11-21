@@ -5,10 +5,10 @@ const auth = require("../middlewares/authmiddleware");
 
 /**
  * @swagger
- * /followings/follow:
+ * /followings/seguir:
  *   post:
  *     tags: [Follows]
- *     summary: Follow a new user
+ *     summary: Seguir a un nuevo usuario
  *     security:
  *       - ApiTokenAuth: []
  *     requestBody:
@@ -20,8 +20,10 @@ const auth = require("../middlewares/authmiddleware");
  *             properties:
  *               id_usuario:
  *                 type: integer
- *               nickname:
- *                 type: string
+ *                 example: "1"
+ *               id_usuario_seguido:
+ *                 type: integer
+ *                 example: "1"
  *     responses:
  *       201:
  *         description: You have started following the user
@@ -41,7 +43,7 @@ const auth = require("../middlewares/authmiddleware");
  *       500:
  *         description: Internal server error
  */
-router.post("/follow", auth, followingController.follow);
+router.post("/seguir", auth, followingController.seguir);
 
 
 /**

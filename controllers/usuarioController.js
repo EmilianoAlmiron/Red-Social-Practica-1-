@@ -4,7 +4,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
 //Permite registrar a un nuevo usuario
-const register = async(req, res) => {
+const registrar = async(req, res) => {
     //Desectructura del body lo que le pedimos
     const { nombre, mail, nickname, password } = req.body;
 
@@ -30,7 +30,7 @@ const register = async(req, res) => {
 };
 
 //Permite listar a todos los usuarios registrados
-const list = async(req, res) => {
+const listado = async(req, res) => {
     try {
         //Creamos un pagina de inicio y un limite
         const page = parseInt(req.query.page) || 1;
@@ -67,8 +67,8 @@ const list = async(req, res) => {
     }
 }
 
-//Permite autenticar al usuario mediante el mail y password
-const login = async(req, res) => {
+//Permite autenticar al usuario mediante el nickname y password
+const iniciarSesion = async(req, res) => {
     const { nickname, password } = req.body;
     
     try {
@@ -100,7 +100,7 @@ const login = async(req, res) => {
 }
 
 //Permite al usuario editar su perfil
-const update = async(req, res) => {
+const actualizar = async(req, res) => {
     try {
         const id = req.user.id;
         const { nombre, nickname, mail, password } = req.body;
@@ -109,16 +109,25 @@ const update = async(req, res) => {
             avatarPath = `uploads/avatars/${req.file.filename}`
         }
 
-        // Buscar el usuario por id
+        // Actualizar los campos
         const usuario = await Usuario.findByPk(id);
         if (!usuario) {
             return res.status(404).send({ error: 'Usuario no encontrado' });
         }
 
-        // Actualizar los campos
-        usuario.nombre = nombre;
+        // Actualiza los datos si es necesario
+        if (nombre) {
+            usuario.nombre = nombre;
+        }
+        
+        if (nickname) {
         usuario.nickname = nickname;
-        usuario.mail = mail;
+        }
+
+        if (mail) {
+            usuario.mail = mail;
+        }
+
         if (avatarPath) {
             usuario.avatar = avatarPath; // Guardar la ruta del avatar
         }
@@ -138,8 +147,8 @@ const update = async(req, res) => {
 
 
 module.exports = {
-    register,
-    update,
-    list,
-    login
+    registrar,
+    actualizar,
+    listado,
+    iniciarSesion
 };

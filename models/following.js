@@ -3,6 +3,7 @@ const Following = (sequelize, Sequelize) => {
         id_usuario: {
             type: Sequelize.INTEGER,
             allowNull: false,
+            //referencia a la tabla usuarios(id de origen)
             references: {
                 model: 'Usuarios', // Nombre de la tabla a la que se hace referencia
                 key: 'id', // Clave primaria de la tabla Usuarios
@@ -11,22 +12,18 @@ const Following = (sequelize, Sequelize) => {
         id_usuario_seguido: {
             type: Sequelize.INTEGER,
             allowNull: false,
+            //referencia a la tabla de usuarios(id de destino)
             references: {
                 model: 'Usuarios', // Nombre de la tabla a la que se hace referencia
                 key: 'id', // Clave primaria de la tabla Usuarios
             },
-        },
-        nickname:{
-            type: Sequelize.STRING,
-            allowNull: false,
-            defaultValue: 'default_nickname',
-        },    
+        },  
     }, {
         timestamps: true,
-        // Preguntale a chatGPT        
+        //Propiedad del Sequelize para que no se repita el following
         indexes: [{
             unique: true,
-            fields: ['id_usuario', 'id_usuario_seguido','nickname' ],
+            fields: ['id_usuario', 'id_usuario_seguido' ],
         }, ],
     });
 };

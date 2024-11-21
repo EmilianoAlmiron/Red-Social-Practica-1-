@@ -3,16 +3,17 @@ const Following = db.Following;
 const Usuario = db.Usuario;
 
  // Seguir a alguien, pide el id_usuario y id_usuario_seguido
-const follow = async (req, res) => {
+const seguir = async (req, res) => {
     const id_usuario = req.user.id;
     const { id_usuario_seguido } = req.body;    
 
+    //Condicion para no poder seguirte a vos mismo
     if (id_usuario == id_usuario_seguido) {
         return res.status(400).send({ message: "No puedes seguirte a ti mismo" });
     }
 
     try {
-        await Following.create({ id_usuario, id_usuario_seguido });
+        await Following.create({ id_usuario, id_usuario_seguido });//utiliza el create del Sequelize con el modelo de Following
         res.status(201).send({ message: "Has comenzado a seguir al usuario" });
     } catch (error) {
         if(error.name === "SequelizeUniqueConstraintError"){
@@ -32,9 +33,9 @@ const follow = async (req, res) => {
 const getFollowing = async(req, res) => {
     const id_usuario = req.user.id;
     try {
-        const usuario = await db.Usuario.findByPk(id_usuario, {
+        const usuario = await Usuario.findByPk(id_usuario, {
             include: [{
-                model: db.Usuario,
+                model: Usuario,
                 as: 'seguidos', // Usa la relación "seguidos"
                 attributes: ['id', 'nombre', 'nickname'],
                 through: { 
@@ -122,7 +123,7 @@ const listMutualFollowing = async (req, res) => {
 
 
 module.exports = {
-    follow,  
+    seguir,  
     unfollow,
     listMutualFollowing,
     getFollowing,
