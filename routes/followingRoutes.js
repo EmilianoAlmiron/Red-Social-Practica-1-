@@ -48,11 +48,11 @@ router.post("/seguir", auth, followingController.seguir);
 
 /**
  * @swagger
- * /followings/unfollow:
+ * /followings/dejarDeSeguir:
  *   delete:
  *     tags:
  *       - Follows
- *     summary: Delete following
+ *     summary: Eliminar a un seguidor!......So malo...!!!
  *     security:
  *       - ApiTokenAuth: []
  *     requestBody:
@@ -62,8 +62,9 @@ router.post("/seguir", auth, followingController.seguir);
  *           schema:
  *             type: object
  *             properties:
- *               nickname:
- *                 type: string
+ *               id_usuario_seguido:
+ *                  type: string
+ *                  example: "Numero"
  *     responses:
  *       200:
  *         description: Has dejado de seguir al usuario
@@ -99,7 +100,7 @@ router.post("/seguir", auth, followingController.seguir);
  *                   type: string
  *                   example: SequelizeDatabaseError
  */
-router.delete("/unfollow", auth, followingController.unfollow);
+router.delete("/dejarDeSeguir", auth, followingController.dejarSeguir);
 
 /**
  * @swagger
@@ -137,7 +138,7 @@ router.delete("/unfollow", auth, followingController.unfollow);
  *       500:
  *         description: Internal server error
  */
-router.get("/follow", auth, followingController.getFollowing);
+router.get("/follow", auth, followingController.listaSeguidos);
 
 
 /**

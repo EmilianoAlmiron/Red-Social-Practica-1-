@@ -2,16 +2,16 @@ const db = require('../models');
 const Following = db.Following;
 const Usuario = db.Usuario;
 
- // Seguir a alguien, pide el id_usuario y id_usuario_seguido
+// Seguir a alguien, pide el id_usuario y id_usuario_seguido
 const seguir = async (req, res) => {
     const id_usuario = req.user.id;
     const { id_usuario_seguido } = req.body;    
-
+    
     //Condicion para no poder seguirte a vos mismo
     if (id_usuario == id_usuario_seguido) {
         return res.status(400).send({ message: "No puedes seguirte a ti mismo" });
     }
-
+    
     try {
         await Following.create({ id_usuario, id_usuario_seguido });//utiliza el create del Sequelize con el modelo de Following
         res.status(201).send({ message: "Has comenzado a seguir al usuario" });
@@ -26,11 +26,36 @@ const seguir = async (req, res) => {
             });
         }
     }
-        
+    
 };
 
-// Obtener la lista de usuarios que el usuario sigue
-const getFollowing = async(req, res) => {
+// Permite dejar de seguir a alguien
+const dejarSeguir = async (req, res) => {
+    const id_usuario = req.user.id;
+    const { id_usuario_seguido } = req.body;
+
+    try {
+        //constante con el resultado de la operacion de eliminacion
+        const result = await Following.destroy({//destroy devuelve un numero
+            where: {
+                id_usuario: id_usuario,
+                id_usuario_seguido: id_usuario_seguido
+            }
+        });
+        //compara que result tenga un numero, si no entra en el else
+        if (result > 0) {
+            res.status(200).send({ message: "Has dejado de seguir al usuario" });
+        } else {
+            res.status(404).send({ message: "No se encontró la relación de seguimiento" });
+        }
+    } catch (error) {
+        res.status(500).send({ error: error.message, tipo: error.name });
+    }
+};
+
+
+// Permite obtener la lista de usuarios que sigo
+const listaSeguidos = async(req, res) => {
     const id_usuario = req.user.id;
     try {
         const usuario = await Usuario.findByPk(id_usuario, {
@@ -52,7 +77,7 @@ const getFollowing = async(req, res) => {
     }
 };
 
-// Obtener la lista de las personas que siguen al usuario
+// Permite obtener la lista de las personas que siguen al usuario logiado
 const getFollowers = async(req, res) => {
     const id_usuario_seguido = req.user.id;
 
@@ -76,30 +101,7 @@ const getFollowers = async(req, res) => {
     }
 };
 
-
-const unfollow = async (req, res) => {
-    const id_usuario = req.user.id;
-    const { nickname } = req.body;
-
-    try {
-        const result = await Following.destroy({
-            where: {
-                id_usuario: id_usuario,
-                nickname: nickname
-            }
-        });
-
-        if (result > 0) {
-            res.status(200).send({ message: "Has dejado de seguir al usuario" });
-        } else {
-            res.status(404).send({ message: "No se encontró la relación de seguimiento" });
-        }
-    } catch (error) {
-        res.status(500).send({ error: error.message, tipo: error.name });
-    }
-};
-
-
+// Permite listar a los usuarios con los que existe un seguimiento mutuo
 const listMutualFollowing = async (req, res) => {
     const id_usuario = req.user.id;
 
@@ -124,8 +126,8 @@ const listMutualFollowing = async (req, res) => {
 
 module.exports = {
     seguir,  
-    unfollow,
+    dejarSeguir,
     listMutualFollowing,
-    getFollowing,
+    listaSeguidos,
     getFollowers,
 };

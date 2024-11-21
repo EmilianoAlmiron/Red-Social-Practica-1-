@@ -7,8 +7,11 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/avatars'); // Carpeta donde se guardarán las imágenes
     },
     filename: function(req, file, cb) {
+        //variable con el numero de la fecha y un numero random
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        const ext = path.extname(file.originalname); // Obtener la extensión del archivo
+        // Obtener la extensión del archivo
+        const ext = path.extname(file.originalname); 
+        //definimos el nombre del archivo
         cb(null, file.fieldname + '-' + uniqueSuffix + ext);
     }
 });
@@ -16,11 +19,13 @@ const storage = multer.diskStorage({
 // Filtrar archivos para asegurarnos de que solo se suban imágenes
 const fileFilter = (req, file, cb) => {
     const allowedTypes = /jpeg|jpg|png/;
+    //validacion por el extencion, definido en la linea anterior
     const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+    //validacion con mimitype(contenido)
     const mimetype = allowedTypes.test(file.mimetype);
 
     if (mimetype && extname) {
-        return cb(null, true);
+        return cb(null, true);//null(ningun error), true(se verifico correctamente)
     } else {
         cb(new Error('Solo se permiten imágenes en formato JPEG, JPG o PNG'));
     }

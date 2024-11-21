@@ -12,9 +12,22 @@ const registrar = async(req, res) => {
     if (!nombre || !mail || !nickname || !password) {
         return res.status(400).send({ message: "Faltan datos de completar" });
     }
+
+    let avatarPath= null;
+    if (req.file){
+        avatarPath = `uploads/avatars/${req.file.filename}`;
+    }
     try {
-        //Crea al usuario 
-        const usuario = await Usuario.create(req.body);//usa el create del modelo Usuario de Sequelize
+        const usuarioData = { 
+            nombre, 
+            mail, 
+            nickname, 
+            password, 
+            avatar: avatarPath // Añadir la ruta del avatar si está presente
+        };
+
+        //Crea al usuario en la Base de Datos 
+        const usuario = await Usuario.create(usuarioData);//usa el create del modelo Usuario de Sequelize
         res.status(201).send(usuario);
     } catch (error) {
         //Error si el Mail o nickname ya existen
@@ -116,30 +129,16 @@ const actualizar = async(req, res) => {
         }
 
         // Actualiza los datos si es necesario
-        if (nombre) {
-            usuario.nombre = nombre;
-        }
+        if (nombre) usuario.nombre = nombre;
+        if (nickname) usuario.nickname = nickname;
+        if (mail) usuario.mail = mail;
+        if (avatarPath) usuario.avatar = avatarPath; // Guardar la ruta del avatar
+        if (password) usuario.password = password;
         
-        if (nickname) {
-        usuario.nickname = nickname;
-        }
-
-        if (mail) {
-            usuario.mail = mail;
-        }
-
-        if (avatarPath) {
-            usuario.avatar = avatarPath; // Guardar la ruta del avatar
-        }
-
-        // Solo actualizar la contraseña si fue proporcionada
-        if (password) {
-            usuario.password = password;
-        }
 
         await usuario.save(); // Sequelize activará el hook `beforeUpdate` si es necesario
 
-        res.status(200).send(usuario);
+        res.status(200).send({usuario, message: "Se actualizo correctamente" });
     } catch (error) {
         res.status(400).send({ error: error.message });
     }

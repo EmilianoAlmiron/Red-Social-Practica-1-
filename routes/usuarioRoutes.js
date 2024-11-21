@@ -13,7 +13,7 @@ const upload = require("../middlewares/uploadMiddleware");
  *     requestBody:
  *       required: true
  *       content:
- *         application/x-www-form-urlencoded:
+ *         multipart/form-data:
  *           schema:
  *             type: object
  *             properties:
@@ -30,6 +30,9 @@ const upload = require("../middlewares/uploadMiddleware");
  *               password:
  *                 type: string
  *                 example: "poneAlgoSeguro"
+ *               avatar:
+ *                   type: string
+ *                   format: binary
  *     responses:
  *       201:
  *         description: User created successfully
@@ -46,12 +49,15 @@ const upload = require("../middlewares/uploadMiddleware");
  *                   type: string
  *                 nickname:
  *                   type: string
+ *                 avatar:
+ *                   type: string
+ *                   format: binary
  *       400:
  *         description: Bad request - missing or invalid fields
  *       500:
  *         description: Internal server error
  */
-router.post("/registrar", usuarioController.registrar);
+router.post("/registrar", upload.single('avatar'), usuarioController.registrar);
 
 /**
  * @swagger
@@ -84,7 +90,6 @@ router.post("/registrar", usuarioController.registrar);
  *               avatar:
  *                 type: string
  *                 format: binary
-
  *     responses:
  *       200:
  *         description: User updated successfully
@@ -175,6 +180,7 @@ router.get("/lista", usuarioController.listado);
  *                 example: "Cordobezzz"
  *               password:
  *                 type: string
+ *                 example: "****"
  *     responses:
  *       200:
  *         description: token created successfully
