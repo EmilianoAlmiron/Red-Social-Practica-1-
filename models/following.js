@@ -16,12 +16,17 @@ const Following = (sequelize, Sequelize) => {
                 key: 'id', // Clave primaria de la tabla Usuarios
             },
         },
+        nickname:{
+            type: Sequelize.STRING,
+            allowNull: false,
+            defaultValue: 'default_nickname',
+        },    
     }, {
         timestamps: true,
         // Preguntale a chatGPT        
         indexes: [{
             unique: true,
-            fields: ['id_usuario', 'id_usuario_seguido'],
+            fields: ['id_usuario', 'id_usuario_seguido','nickname' ],
         }, ],
     });
 };

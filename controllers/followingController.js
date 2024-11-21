@@ -78,13 +78,13 @@ const getFollowers = async(req, res) => {
 
 const unfollow = async (req, res) => {
     const id_usuario = req.user.id;
-    const { id_usuario_seguido } = req.body;
+    const { nickname } = req.body;
 
     try {
         const result = await Following.destroy({
             where: {
                 id_usuario: id_usuario,
-                id_usuario_seguido: id_usuario_seguido
+                nickname: nickname
             }
         });
 

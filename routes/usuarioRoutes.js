@@ -163,6 +163,7 @@ router.get("/list", usuarioController.list);
  *               mail:
  *                 type: string
  *                 format: email
+ *                 example: "ejemplo@comoestas.com"
  *               password:
  *                 type: string
  *     responses:

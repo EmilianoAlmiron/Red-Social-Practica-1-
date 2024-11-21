@@ -20,8 +20,8 @@ const auth = require("../middlewares/authmiddleware");
  *             properties:
  *               id_usuario:
  *                 type: integer
- *               id_usuario_seguido:
- *                 type: integer
+ *               nickname:
+ *                 type: string
  *     responses:
  *       201:
  *         description: You have started following the user
@@ -44,7 +44,59 @@ const auth = require("../middlewares/authmiddleware");
 router.post("/follow", auth, followingController.follow);
 
 
-//preguntar a copilot o a Romano
+/**
+ * @swagger
+ * /followings/unfollow:
+ *   delete:
+ *     tags:
+ *       - Follows
+ *     summary: Delete following
+ *     security:
+ *       - ApiTokenAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *          application/x-www-form-urlencoded:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               nickname:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: Has dejado de seguir al usuario
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Has dejado de seguir al usuario
+ *       404:
+ *         description: No se encontró la relación de seguimiento
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: No se encontró la relación de seguimiento
+ *       500:
+ *         description: Error interno del servidor
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Error message
+ *                 tipo:
+ *                   type: string
+ *                   example: SequelizeDatabaseError
+ */
 router.delete("/unfollow", auth, followingController.unfollow);
 
 /**

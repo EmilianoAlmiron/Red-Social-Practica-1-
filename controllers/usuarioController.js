@@ -32,7 +32,6 @@ const update = async(req, res) => {
         if (req.file) {
             avatarPath = `uploads/avatars/${req.file.filename}`
         }
-        //console.log(avatarPath)
 
         // Buscar el usuario por id
         const usuario = await Usuario.findByPk(id);
@@ -111,7 +110,8 @@ const login = async(req, res) => {
         const token = jwt.sign({
             id: usuario.id,
             nombre: usuario.nombre,
-            mail: usuario.mail
+            mail: usuario.mail,
+            nickname: usuario.nickname,
         }, process.env.JWT_SECRET, { expiresIn: 180 });
         res.status(200).send({ token });
     } catch (error) {
